@@ -2,9 +2,12 @@ const form = document.querySelector("form");
 const tableBody = document.getElementById("todoTable");
 
 function fetchTasks() {
-    fetch("http://localhost:8000/tasks")
-        .then(response => response.json())
-        .then(data => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://localhost:8000/tasks", true);
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
             tableBody.innerHTML = "";
             data.tasks.forEach((item, index) => {
                 const todoLines = item.todo.split('\n');
@@ -27,43 +30,46 @@ function fetchTasks() {
 
             const deleteButtons = tableBody.querySelectorAll("button[data-id]");
             deleteButtons.forEach(btn => {
-                btn.addEventListener("click", function() {
+                btn.addEventListener("click", function () {
                     const id = this.getAttribute("data-id");
                     deleteTask(id);
                 });
             });
-        });
+        }
+    };
+
+    xhr.send();
 }
 
-// Delete single todo by ID
 function deleteTask(id) {
-    fetch(`http://localhost:8000/delete/${id}`, { method: "DELETE" })
-        .then(response => response.json())
-        .then(data => {
-            fetchTasks();
-        })
-        .catch(err => console.error("Error:", err));
-}
+    const xhr = new XMLHttpRequest();
+    xhr.open("DELETE", `http://localhost:8000/delete/${id}`, true);
 
-// Initial load
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            fetchTasks();
+        }
+    };
+
+    xhr.send();
+}
 fetchTasks();
 
-// Handle form submission
-form.addEventListener("submit", function(event) {
+form.addEventListener("submit", function (event) {
     event.preventDefault();
 
     const username = document.getElementById("username").value;
     const todo = document.getElementById("todos").value;
 
-    fetch("http://localhost:8000/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username, todo: todo })
-    })
-    .then(response => response.json())
-    .then(data => {
-        fetchTasks();
-        form.reset();
-    })
-    .catch(error => console.error("Error:", error));
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:8000/add", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            fetchTasks();
+            form.reset();
+        }
+    };
+    xhr.send(JSON.stringify({ username: username, todo: todo }));
 });
