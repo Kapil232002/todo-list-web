@@ -2,10 +2,10 @@ const form = document.querySelector("form");
 const tableBody = document.getElementById("todoTable");
 
 function fetchTasks() {
-    const xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();        //browser Api
     xhr.open("GET", "http://localhost:8000/tasks", true);
 
-    xhr.onload = function () {
+    xhr.onload = function () {     //onload is event handler
         if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
             tableBody.innerHTML = "";
@@ -73,3 +73,4 @@ form.addEventListener("submit", function (event) {
     };
     xhr.send(JSON.stringify({ username: username, todo: todo }));
 });
+
