@@ -153,7 +153,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
 
             self._set_headers()
             self.wfile.write(json.dumps({"tasks": tasks}).encode())
-
+            
     def do_DELETE(self):
         global tasks
         if self.path.startswith("/delete/"):
@@ -173,7 +173,6 @@ class SimpleHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"tasks": tasks}).encode())
             except ValueError:
                 self.send_error(400, "Invalid task ID")
-
 
 def run():
     server = HTTPServer(("localhost", 8000), SimpleHandler)
